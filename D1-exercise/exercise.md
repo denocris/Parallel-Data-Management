@@ -25,7 +25,7 @@
    process
 
    ```c
-   int* buf=(int*) malloc(N*sizeof(int));
+   int* buf=(int*) malloc( N * sizeof(int) );
 
    ...
 
@@ -37,13 +37,18 @@
 
    ```c
 
-   offset = rank*(N/size)*sizeof(int);
-   offset_buff = rank*(N/size);
-   write_buff = N/size;
+   int loc_size = N/size;
+   int* buf=(int*) malloc( loc_size * sizeof(int) );
 
    ...
 
-   MPI_File_write_at(fhw, offset, buf + offset_buff, write_buff, MPI_INT, &status);
+   for ( i=0;i<loc_size;i++){
+     buf[i] = rank * loc_size + i ;
+   }
+
+   ...
+
+   MPI_File_write_at(fhw, rank*loc_size*sizeof(int), buf, loc_size, MPI_INT, &status);
 
    ```
 
@@ -59,8 +64,8 @@ No, in the case of 1 and 3 processor a rest is appearing and the program does no
    ```c
 
    if( rest != 0){
-   if( rank == size - 1)
-   write_buff += rest;
+    if( rank == size - 1)
+     loc_size += rest;
    }
 
    ```
@@ -73,6 +78,8 @@ No, in the case of 1 and 3 processor a rest is appearing and the program does no
    b. What do you expect each process to read?
 
 9. Fix the code, to read the correct amount of data, as in point 5.
+
+To fix the code we need to put ```#define FILESIZE 80```
   
 10. (Homework) Try to compile and run on different systems and see if
     the results are consistent.
