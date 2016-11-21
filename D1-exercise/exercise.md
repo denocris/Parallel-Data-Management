@@ -24,26 +24,28 @@
 4. Modify the code in order to print all the 16 integer by each
    process
 
-```c
-int* buf=(int*) malloc(N*sizeof(int));
+   ```c
+   int* buf=(int*) malloc(N*sizeof(int));
 
-...
+   ...
 
-MPI_File_write_at(fhw, rank*N*sizeof(int), buf, N, MPI_INT, &status); 
-```
+   MPI_File_write_at(fhw, rank*N*sizeof(int), buf, N, MPI_INT, &status); 
+   ```
 
 5. Modify the code such that each process print a slice of the `buf`
    array.
 
-```c
+   ```c
 
-offset = rank*(N/size)*sizeof(int);
-offset_buff = rank*(N/size);
-write_buff = N/size;
+   offset = rank*(N/size)*sizeof(int);
+   offset_buff = rank*(N/size);
+   write_buff = N/size;
 
-MPI_File_write_at(fhw, offset, buf + offset_buff, write_buff, MPI_INT, &status);
+   ...
 
-```
+   MPI_File_write_at(fhw, offset, buf + offset_buff, write_buff, MPI_INT, &status);
+
+   ```
 
 6. Run the code using 1,2 and 3 processes. Is the code writing the 16
    integers in all cases?
@@ -54,14 +56,14 @@ No, in the case of 1 and 3 processor a rest is appearing and the program does no
    each process write a slice of the `buf` array.  (Hint: use the
    loadbalacing strategy )
 
-```c
+   ```c
 
-if( rest != 0){
-if( rank == size - 1)
-write_buff += rest;
-}
+   if( rest != 0){
+   if( rank == size - 1)
+   write_buff += rest;
+   }
 
-```
+   ```
 
 8. Check the readFile_offset.c code and understand what it is doing.
   
