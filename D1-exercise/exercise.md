@@ -79,7 +79,7 @@
 
 9. Fix the code, to read the correct amount of data, as in point 5.
 
-   To fix the code we need to put ```#define FILESIZE 80```
+   To fix the code we need to put ```#define FILESIZE 64```
   
 10. (Homework) Try to compile and run on different systems and see if
     the results are consistent.
