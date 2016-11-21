@@ -12,8 +12,8 @@
 
    a. It writes 16 integers from 0 to 15
 
-   b. It writes 16 integers, each process writes 0,1,2,3 (This one!!!)
-        (The command at the beginning was ```c MPI_File_write_at(fhw, offset, buf, (N/size), MPI_INT, &status);```)
+   b. It writes 16 integers, each process writes 0,1,2,3 (This one!!!
+        The command at the beginning was ```c MPI_File_write_at(fhw, offset, buf, (N/size), MPI_INT, &status);```)
 
    c. It breaks your computer
 
@@ -25,8 +25,11 @@
    process
 
 ```c
+int* buf=(int*) malloc(N*sizeof(int));
 
-MPI_File_write_at(fhw, offset, buf, N, MPI_INT, &status);
+...
+
+MPI_File_write_at(fhw, rank*N*sizeof(int), buf, N, MPI_INT, &status); 
 ```
 
 5. Modify the code such that each process print a slice of the `buf`
