@@ -13,6 +13,7 @@
    a. It writes 16 integers from 0 to 15
 
    b. It writes 16 integers, each process writes 0,1,2,3 (This one!!!)
+        (The command at the beginning was ```c MPI_File_write_at(fhw, offset, buf, (N/size), MPI_INT, &status);```)
 
    c. It breaks your computer
 
