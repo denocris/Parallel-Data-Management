@@ -24,7 +24,7 @@ int main( int argc, char *argv[] )
     MPI_Comm_size( MPI_COMM_WORLD, &size );
     if (size != 6) {
 	    printf( "Communicator size must be 6\n" );
-	    MPI_Abort( MPI_COMM_WORLD, 1 );
+	    MPI_Abort( MPI_COMM_WORLD, 1 ); 
     }
 
     m=8;
@@ -46,11 +46,8 @@ int main( int argc, char *argv[] )
     dims[0] = row_procs;
     dims[1] = col_procs;
     periods[0] = periods[1] = 0;
-
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &comm);
-
-    MPI_Comm_rank(comm, &rank); // equivalent if I use MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
+    MPI_Comm_rank(comm, &rank);
     MPI_Cart_coords(comm, rank, 2, coords);
 
     printf(" rank %d coords %d %d \n", rank, coords[0],coords[1]);
@@ -59,11 +56,13 @@ int main( int argc, char *argv[] )
     local_array = (int *)malloc( lsizes[0] * lsizes[1] * sizeof(int) );
 
     /* ... set elements of local_array ... */
-    for (i=0; i < lsizes[0]; i++){
-	      for ( j=0; j < lsizes[1]; j++){
-		          local_array[i*lsizes[1]+j]=rank*100+i*lsizes[1]+j;
-		    }
-	  }
+    for (i=0;i<lsizes[0];i++)
+	{
+	for (j=0;j<lsizes[1];j++)
+		{
+		local_array[i*lsizes[1]+j]=rank*100+i*lsizes[1]+j;
+		}
+	}
 
     /* global indices of the first element of the local array */
     start_indices[0] = coords[0] * lsizes[0];
@@ -80,7 +79,7 @@ int main( int argc, char *argv[] )
 		      MPI_INFO_NULL);
 
     local_array_size = lsizes[0] * lsizes[1];
-    MPI_File_write_all(fh, local_array, local_array_size,   // write and if you finish before the others wait for them
+    MPI_File_write_all(fh, local_array, local_array_size,
 		       MPI_INT, &status);
 
     MPI_File_close(&fh);

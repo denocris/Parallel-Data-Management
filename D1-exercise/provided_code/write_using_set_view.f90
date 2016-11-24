@@ -3,35 +3,74 @@
 
 PROGRAM write_using_set_view
 
- use mpi
-    
- integer :: ierr, i, myrank, thefile
- integer, parameter :: BUFSIZE=4
- integer, dimension(BUFSIZE) :: buf
- integer(kind=MPI_OFFSET_KIND) :: disp
+  USE mpi
 
- call MPI_INIT(ierr)
- call MPI_COMM_RANK(MPI_COMM_WORLD, myrank, ierr)
- do i = 1, BUFSIZE
-    buf(i) = myrank * 10 + i
- enddo
+  INTEGER :: ierr, i, myrank, thefile
+  INTEGER, PARAMETER :: BUFSIZE=4
+  INTEGER, DIMENSION(BUFSIZE) :: buf
+  INTEGER(kind=MPI_OFFSET_KIND) :: disp
 
- call MPI_FILE_OPEN(MPI_COMM_WORLD, 'testfile', &
-                   MPI_MODE_WRONLY + MPI_MODE_CREATE, &
-                   MPI_INFO_NULL, thefile, ierr)
+  CALL MPI_INIT(ierr)
+  CALL MPI_COMM_RANK(MPI_COMM_WORLD, myrank, ierr)
 
- call MPI_TYPE_SIZE(MPI_INTEGER, intsize,ierr)
- disp = myrank * BUFSIZE * intsize
+  DO i = 1, BUFSIZE
+     buf(i) = myrank * 10 + i
+  ENDDO
 
- call MPI_FILE_SET_VIEW(thefile, disp, MPI_INTEGER, &
-                       MPI_INTEGER, 'native', &
-                       MPI_INFO_NULL, ierr)
+! FIRST EXERCISE
+  ! CALL MPI_TYPE_CONTIGUOUS(BUFSIZE, MPI_INT, my_new_type, ierr) ! Creiamo un type contiguo
+  ! CALL MPI_TYPE_COMMIT(my_new_type, ierr) ! Committiamo il tyoe
+  !
+  ! CALL MPI_FILE_OPEN(MPI_COMM_WORLD, 'testfile', &
+  !      MPI_MODE_WRONLY + MPI_MODE_CREATE, &
+  !      MPI_INFO_NULL, thefile, ierr)
+  !
+  ! CALL MPI_TYPE_SIZE(my_new_type, intsize,ierr)
+  !
+  ! disp = myrank * 1 * intsize ! Ora devo contare il Type intero
+  !
+  ! !CALL MPI_FILE_SET_VIEW(thefile, disp, MPI_INTEGER, &
+  !      !MPI_INTEGER, 'native', &
+  !      !MPI_INFO_NULL, ierr)
+  !
+  ! CALL MPI_FILE_SET_VIEW(thefile, disp, MPI_INTEGER, &
+  !       my_new_type, 'native', &
+  !       MPI_INFO_NULL, ierr)
+  !
+  ! !CALL MPI_FILE_WRITE(thefile, buf, BUFSIZE, MPI_INTEGER, &
+  !      !MPI_STATUS_IGNORE, ierr)
+  !
+  ! CALL MPI_FILE_WRITE(thefile, buf, 1, my_new_type, &
+  !      MPI_STATUS_IGNORE, ierr)
+  !
+  ! CALL MPI_FILE_CLOSE(thefile, ierr)
+  !
+  ! CALL MPI_FINALIZE(ierr)
 
- call MPI_FILE_WRITE(thefile, buf, BUFSIZE, MPI_INTEGER, &
-                       MPI_STATUS_IGNORE, ierr)
- call MPI_FILE_CLOSE(thefile, ierr)
+! SECOND EXERCISE
 
- call MPI_FINALIZE(ierr)
+CALL MPI_TYPE_VECTOR(2,2,8, MPI_INTEGER, my_new_type, ierr) ! Creiamo un type che ci fa comodo
+CALL MPI_TYPE_COMMIT(my_new_type, ierr) ! Committiamo il tyoe
+
+CALL MPI_FILE_OPEN(MPI_COMM_WORLD, 'testfile', &
+     MPI_MODE_WRONLY + MPI_MODE_CREATE, &
+     MPI_INFO_NULL, thefile, ierr)
+
+CALL MPI_TYPE_SIZE(MPI_INT, intsize,ierr)
+
+
+disp = myrank * 2 * intsize
+!write(*,*) MPI_INTEGER, MPI_INT, int_size, integersize
+
+CALL MPI_FILE_SET_VIEW(thefile, disp, MPI_INTEGER, &
+      my_new_type, 'native', &
+      MPI_INFO_NULL, ierr)
+
+CALL MPI_FILE_WRITE(thefile, buf, 4, MPI_INTEGER, &
+     MPI_STATUS_IGNORE, ierr)
+
+CALL MPI_FILE_CLOSE(thefile, ierr)
+
+CALL MPI_FINALIZE(ierr)
 
 END PROGRAM write_using_set_view
-
